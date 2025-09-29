@@ -1,28 +1,30 @@
-// balanceSheetModel.js
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');  // Assuming database setup is here
+const BalanceSheet = require('../models/balanceSheetModel');
 
-const BalanceSheet = sequelize.define('BalanceSheet', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  totalAmount: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
-  },
-  created_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  }
-}, {
-  tableName: 'balance_sheets',
-  timestamps: false
-});
+// Generate a balance sheet for a user
+exports.generateBalanceSheet = async (userId) => {
+    try {
+        const totalAmount = await calculateUserTotalAmount(userId); // Assuming this function calculates the total balance
+        const newBalanceSheet = await BalanceSheet.create({ userId, totalAmount });
+        return newBalanceSheet;
+    } catch (error) {
+        console.error('Error generating balance sheet:', error);
+        throw new Error('Database Error');
+    }
+};
 
-module.exports = BalanceSheet;
+// Get a balance sheet by user ID
+exports.getBalanceSheetByUserId = async (userId) => {
+    try {
+        const balanceSheet = await BalanceSheet.findOne({ where: { userId } });
+        return balanceSheet;
+    } catch (error) {
+        console.error('Error fetching balance sheet:', error);
+        throw new Error('Database Error');
+    }
+};
+
+// Mock function to calculate user's total amount (can be replaced with real logic)
+const calculateUserTotalAmount = async (userId) => {
+    // Example logic: fetch all expenses and calculate total (this is a placeholder)
+    return 100.00;  // Replace with real calculation logic
+};

@@ -1,0 +1,129 @@
+version: '3'
+
+services:
+  # User Service
+  user-service:
+    build: ./services/user-service
+    container_name: user-service
+    environment:
+      - PORT=3001
+      - DB_URI=${DB_URI}
+      - REDIS_HOST=redis
+      - KAFKA_BROKER=kafka:9092
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    networks:
+      - divvymate-network
+
+  # Expense Service
+  expense-service:
+    build: ./services/expense-service
+    container_name: expense-service
+    environment:
+      - PORT=3002
+      - DB_URI=${DB_URI}
+      - REDIS_HOST=redis
+      - KAFKA_BROKER=kafka:9092
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    networks:
+      - divvymate-network
+
+  # Balance Sheet Service
+  balance-sheet-service:
+    build: ./services/balance-sheet-service
+    container_name: balance-sheet-service
+    environment:
+      - PORT=3003
+      - DB_URI=${DB_URI}
+      - REDIS_HOST=redis
+      - KAFKA_BROKER=kafka:9092
+    ports:
+      - "3003:3003"
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    networks:
+      - divvymate-network
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - divvymate-network
+
+  # Redis Cache
+  redis:
+    image: redis:6
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - divvymate-network
+
+  # Kafka Broker
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_BROKER_ID: 1
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    networks:
+      - divvymate-network
+
+  # Zookeeper for Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+    networks:
+      - divvymate-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - user-service
+      - expense-service
+      - balance-sheet-service
+    networks:
+      - divvymate-network
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  divvymate-network:
+    driver: bridge

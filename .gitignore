@@ -1,0 +1,44 @@
+--- DEPENDENCIES & BUILD ARTIFACTS ---
+Node.js dependencies
+/node_modules
+/services/*/node_modules
+npm-debug.log
+.npm
+
+Lock files (unless you are strict about locking dependency versions)
+package-lock.json
+/services/*/package-lock.json
+
+Yarn
+yarn-error.log
+
+Build outputs
+/dist
+/build
+/out
+
+--- ENVIRONMENT & CREDENTIALS ---
+Environment variables (contains secrets, database passwords, etc.)
+.env
+/services//.env
+.env.
+.env.local
+
+--- OPERATING SYSTEM FILES ---
+.DS_Store
+Thumbs.db
+
+--- DOCKER ---
+Ignore Docker build context files
+Docker volumes/data (if running locally and not inside the container's volume)
+However, you might want to version Dockerfile and docker-compose.yml
+.dockerignore files are important, but typically you do version them.
+--- TESTING AND DEBUGGING ---
+/coverage
+.nyc_output
+*.log
+
+--- IDEs & EDITORS ---
+.vscode/
+.idea/
+*.sublime-workspace

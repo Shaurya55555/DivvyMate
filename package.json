@@ -1,0 +1,27 @@
+{
+    "name": "divvymate",
+    "version": "1.0.0",
+    "private": true,
+    "workspaces": [
+      "services/*"
+    ],
+    "scripts": {
+      "start": "docker-compose up --build",
+      "dev": "concurrently \"npm run dev --workspace=user-service\" \"npm run dev --workspace=expense-service\" \"npm run dev --workspace=balance-sheet-service\"",
+      "test": "lerna run test",
+      "lint": "lerna run lint"
+    },
+    "devDependencies": {
+      "concurrently": "^8.0.1",
+      "lerna": "^6.6.1"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/umarei/DivvyMate.git"
+    },
+    "bugs": {
+      "url": "https://github.com/umarei/DivvyMate/issues"
+    },
+    "homepage": "https://github.com/umarei/DivvyMate#readme"
+  }
+  
